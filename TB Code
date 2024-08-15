@@ -1,0 +1,36 @@
+module up_down_counter_tb();
+
+reg i_clk, i_rst, i_up_down, i_pause, i_resume;
+wire [5:0]  o_count;
+
+up_down_counter up_down_counter_inst (i_clk, i_rst, i_up_down, i_pause, i_resume, o_count);
+
+always begin 
+#4 i_clk = ~i_clk;
+end
+
+initial begin
+    i_rst = 1'b1;
+    i_clk = 1'b0;
+    i_up_down = 1'b1;
+    i_pause = 1'b0;
+    i_resume = 1'b0;
+    #30 i_rst = 1'b0;
+    #40 i_pause = 1'b1;
+    #8 i_pause = 1'b0;
+    #16 i_resume = 1'b1;
+    #8 i_resume = 1'b0;
+    #48 i_up_down = 1'b0;
+    #32 i_pause = 1'b1;
+    #8 i_pause = 1'b0;
+    #16 i_resume = 1'b1;
+    #8 i_resume = 1'b0; 
+    #100 i_pause = 1'b1;
+    #8 i_pause = 1'b0;
+    #16 i_up_down = 1'b1;
+    #16 i_resume = 1'b1;
+    #8 i_resume = 1'b0;    
+    #200 $finish();
+end
+
+endmodule
