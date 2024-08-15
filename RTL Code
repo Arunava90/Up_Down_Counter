@@ -1,0 +1,58 @@
+module up_down_counter #(parameter COUNTER_WIDTH = 6)
+                        (
+                        input i_clk,                // Input clock
+                        input i_rst,                // Active high reset
+                        input i_up_down,            // Up count if value = 1 else down count
+                        input i_pause,              // Counter will pause when single pulse will come
+                        input i_resume,             // Counter will resume when single pulse will come
+                        output reg [COUNTER_WIDTH-1:0]  o_count); // Counter output value
+
+reg r_pause;
+
+always@ (posedge i_clk or posedge i_rst) begin
+// During reset
+    if (i_rst) begin
+        o_count <= 'b0;
+        r_pause<= 1'b0;
+    end
+// i_up_down = 0 : Down counter
+    else if (~i_up_down) begin
+        if (i_pause) begin
+            o_count <= o_count;
+            r_pause <= 1'b1;
+        end
+        else if (i_resume) begin
+            o_count <= o_count - 8'd1;
+            r_pause<= 1'b0;
+        end
+        else if (r_pause == 1'b0) begin
+            o_count <= o_count - 8'd1;
+            r_pause<=1'b0;
+        end
+        else begin
+            o_count<=o_count;
+            r_pause<=1'b1;
+        end
+    end
+ // i_up_down = 1 : Up counter
+    else begin
+        if (i_pause) begin
+            o_count <= o_count;
+            r_pause <= 1'b1;
+        end
+        else if (i_resume) begin
+            o_count <= o_count + 8'd1;
+            r_pause<= 1'b0;
+        end
+        else if (r_pause == 1'b0) begin
+            o_count <= o_count + 8'd1;
+            r_pause<=1'b0;
+        end
+        else begin
+            o_count<=o_count;
+            r_pause<=1'b1;
+        end
+    end
+end
+
+endmodule
